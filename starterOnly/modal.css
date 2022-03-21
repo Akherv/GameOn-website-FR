@@ -38,7 +38,6 @@ img {
 =============================================*/
 
 .topnav {
-  /* overflow: hidden; */
   margin: 3.5%;
 }
 
@@ -105,6 +104,8 @@ img {
     position: absolute;
     right: 0;
     top: 0;
+    margin: 5px 5px 0 5px;
+    padding-top: 10px;
   }
 
   .topnav.responsive a {
@@ -230,7 +231,6 @@ main {
   animation-duration: var(--modal-duration);
   background: #232323;
   border-radius: 10px;
-  overflow: hidden;
   position: relative;
   color: #fff;
   padding-top: 10px;
@@ -239,11 +239,15 @@ main {
 .modal-body {
   padding: 15px 8%;
   margin: 15px auto;
+  background: #232323;
+  border-radius: 10px;
 }
 
 .modal-body2 {
   margin: 15px auto;
   height: 100%;
+  background: #232323;
+  border-radius: 10px;
 }
 
 .bground2 {
@@ -583,7 +587,6 @@ input[data-error]::after {
 }
 
 .hero-section {
-  /* min-height: 93vh; */
   border-radius: 10px;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -640,7 +643,7 @@ input[data-error]::after {
 }
 
 .hero-img {
-  grid-column: 6/13;
+  grid-column: span 8;
 }
 
 .hero-img img {

@@ -88,7 +88,143 @@ function validateOnEntry() {
   checkFieldsValid(this);
 }
 
-function setValidationMessage(el, checktype) {
+function checkFieldsValid(el) {
+  let counter = 0;
+
+  //pattern
+  const namePattern = /[a-zA-Z]{2,}/; //name must contains only letters and at least 2 characters
+  const emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; //email must begin with a word or numeric character (one or more time), can be followed by punctuation & another word or numeric character, then must contains an @ symbol, followed by word or numeric character and finish with a top level domain of 2 or 3 characters. (ex:a0.aaa@aaaa.com)
+  let age = getAge(new Date(birthdate.value)); //age calculation between today and birthdate
+  let nbrIsInteger = Number(quantity.value) % 1 === 0;//check if nbr is integer;
+
+  console.log(nbrIsInteger);
+
+  function getAge(date) {
+    let diff = Date.now() - date.getTime();
+    let age = new Date(diff);
+    return Math.abs(age.getUTCFullYear() - 1970);
+  }
+
+  //conditions
+  const firstConditionIsValid = first.value.trim() !== "" && first.value.trim().length >= 2 && namePattern.test(first.value.trim());
+  const lastConditionIsValid = last.value.trim() !== "" && last.value.trim().length >= 2 && namePattern.test(last.value.trim());
+  const emailConditionIsValid = email.value.trim() !== "" && emailPattern.test(email.value.trim());
+  const birthdateConditionIsValid = birthdate.value !== "" && (age >= 18);
+  const quantityConditionIsValid = quantity.value !== "" && quantity.value >= 0 && quantity.value <= 100 && nbrIsInteger;
+  let radioLocationIsValid = false;
+  let checkboxConditionIsValid = true;
+
+  //check on input each text-control fields and give visual clues errors if they are invalid
+  if (el) {
+    if (el.name === 'first') {
+      if (firstConditionIsValid) {
+        removeErrorMessage(first);
+      } else {
+        setErrorMessage(first, 'input');
+      }
+    }
+    if (el.name === 'last') {
+      if (lastConditionIsValid) {
+        removeErrorMessage(last);
+      } else {
+        setErrorMessage(last, 'input');
+      }
+    }
+    if (el.name === 'email') {
+      if (emailConditionIsValid) {
+        removeErrorMessage(email);
+      } else {
+        setErrorMessage(email, 'input');
+      }
+    }
+    if (el.name === 'birthdate') {
+      if (birthdateConditionIsValid) {
+        removeErrorMessage(birthdate);
+      } else {
+        setErrorMessage(birthdate, 'input');
+      }
+    }
+    if (el.name === 'quantity') {
+      if (quantityConditionIsValid) {
+        removeErrorMessage(quantity);
+      } else {
+        setErrorMessage(quantity, 'input');
+      }
+    }
+    radioLocations.forEach((el) => (el.checked) && (radioLocationIsValid = true));
+    if (radioLocationIsValid === true) {
+      removeErrorMessage(location1);
+    }
+    if (checkboxCondition.checked) {
+      checkboxCondition.setAttribute('checked', 'checked');
+      removeErrorMessage(checkbox1);
+      checkboxConditionIsValid = true;
+    } else {
+      checkboxCondition.removeAttribute('checked');
+      setErrorMessage(checkbox1);
+      checkboxConditionIsValid = false;
+    }
+
+  } else {
+    //check on submit all fields and start the counter for final validation
+
+    //check text-control fields
+    if (firstConditionIsValid) {
+      counter += 1;
+      removeErrorMessage(first);
+    } else {
+      setErrorMessage(first);
+    }
+    if (lastConditionIsValid) {
+      counter += 1;
+      removeErrorMessage(last);
+    } else {
+      setErrorMessage(last);
+    }
+    if (emailConditionIsValid) {
+      counter += 1;
+      removeErrorMessage(email);
+    } else {
+      setErrorMessage(email);
+    }
+    if (birthdateConditionIsValid) {
+      counter += 1;
+      removeErrorMessage(birthdate);
+    } else {
+      setErrorMessage(birthdate);
+    }
+    if (quantityConditionIsValid) {
+      counter += 1;
+      removeErrorMessage(quantity);
+    } else {
+      setErrorMessage(quantity);
+    }
+
+    //check location field
+    radioLocations.forEach((el) => (el.checked) && (radioLocationIsValid = true));
+    if (radioLocationIsValid === true) {
+      removeErrorMessage(location1);
+    } else {
+      setErrorMessage(location1);
+    }
+
+    //check condition field
+    if (checkboxCondition.checked) {
+      checkboxCondition.setAttribute('checked', 'checked');
+      removeErrorMessage(checkbox1);
+      checkboxConditionIsValid = true;
+    } else {
+      checkboxCondition.removeAttribute('checked');
+      setErrorMessage(checkbox1);
+      checkboxConditionIsValid = false;
+    }
+
+    //Final global check
+    (counter === 5 && radioLocationIsValid === true && checkboxConditionIsValid === true) ? fieldsValid = true: fieldsValid = false;
+  }
+}
+
+function setErrorMessage(el, checktype) {
   switch (el.name || el.id) {
     case 'first':
       message = "Veuillez entrer 2 caractères ou plus pour le champ du prénom."
@@ -100,7 +236,7 @@ function setValidationMessage(el, checktype) {
       message = "Veuillez entrer 1 email correct"
       break;
     case 'birthdate':
-      message = "Vous devez entrer votre date de naissance."
+      message = "Vous devez entrer votre date de naissance.(Vous devez avoir + de 18 ans)."
       break;
     case 'quantity':
       message = "Vous devez entrer le nombre de tournois auxquels vous avez participé."
@@ -123,122 +259,8 @@ function setValidationMessage(el, checktype) {
   el.classList.add('error');
 }
 
-function removeValidationMessage(el) {
+function removeErrorMessage(el) {
   el.parentElement.removeAttribute('data-error');
   el.parentElement.setAttribute('data-error-visible', 'false');
   el.classList.remove('error');
-}
-
-function checkFieldsValid(el, checktype) {
-  let counter = 0;
-
-  //pattern
-  const namePattern = /[a-zA-Z]{2,}/; //name must contains only letters and at least 2 characters
-  const emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; //email must begin with a word or numeric character (one or more time), can be followed by punctuation & another word or numeric character, then must contains an @ symbol, followed by word or numeric character and finish with a top level domain of 2 or 3 characters. (ex:a0.aaa@aaaa.com)
-  let age = +((new Date().getTime() - new Date(birthdate.value).getTime()) / 31536000000).toFixed(0); //age calculation between today and birthdate
-
-  //conditions
-  const firstConditionIsValid = first.value.trim() !== "" && first.value.trim().length >= 2 && namePattern.test(first.value.trim());
-  const lastConditionIsValid = last.value.trim() !== "" && last.value.trim().length >= 2 && namePattern.test(last.value.trim());
-  const emailConditionIsValid = email.value !== "" && emailPattern.test(email.value);
-  const birthdateConditionIsValid = birthdate.value !== "" && (age >= 18);
-  const quantityConditionIsValid = quantity.value !== "";
-  let radioLocationIsValid = false;
-  let checkboxConditionIsValid = true;
-
-  //check on input each text-control fields and give visual clues errors if they are invalid
-  if (el) {
-    if (el.name === 'first') {
-      if (firstConditionIsValid) {
-        removeValidationMessage(first);
-      } else {
-        setValidationMessage(first, 'input');
-      }
-    }
-    if (el.name === 'last') {
-      if (lastConditionIsValid) {
-        removeValidationMessage(last);
-      } else {
-        setValidationMessage(last, 'input');
-      }
-    }
-    if (el.name === 'email') {
-      if (emailConditionIsValid) {
-        removeValidationMessage(email);
-      } else {
-        setValidationMessage(email, 'input');
-      }
-    }
-    if (el.name === 'birthdate') {
-      if (birthdateConditionIsValid) {
-        removeValidationMessage(birthdate);
-      } else {
-        setValidationMessage(birthdate, 'input');
-      }
-    }
-    if (el.name === 'quantity') {
-      if (quantityConditionIsValid) {
-        removeValidationMessage(quantity);
-      } else {
-        setValidationMessage(quantity, 'input');
-      }
-    }
-
-  } else {
-    //check on submit all fields and start the counter for final validation
-
-    //check text-control fields
-    if (firstConditionIsValid) {
-      counter += 1;
-      removeValidationMessage(first);
-    } else {
-      setValidationMessage(first);
-    }
-    if (lastConditionIsValid) {
-      counter += 1;
-      removeValidationMessage(last);
-    } else {
-      setValidationMessage(last);
-    }
-    if (emailConditionIsValid) {
-      counter += 1;
-      removeValidationMessage(email);
-    } else {
-      setValidationMessage(email);
-    }
-    if (birthdateConditionIsValid) {
-      counter += 1;
-      removeValidationMessage(birthdate);
-    } else {
-      setValidationMessage(birthdate);
-    }
-    if (quantityConditionIsValid) {
-      counter += 1;
-      removeValidationMessage(quantity);
-    } else {
-      setValidationMessage(quantity);
-    }
-
-    //check location field
-    radioLocations.forEach((el) => (el.checked) && (radioLocationIsValid = true));
-    if (radioLocationIsValid === true) {
-      removeValidationMessage(location1);
-    } else {
-      setValidationMessage(location1);
-    }
-
-    //check condition field
-    if (checkboxCondition.checked) {
-      checkboxCondition.setAttribute('checked', 'checked');
-      removeValidationMessage(checkbox1);
-      checkboxConditionIsValid = true;
-    } else {
-      checkboxCondition.removeAttribute('checked');
-      setValidationMessage(checkbox1);
-      checkboxConditionIsValid = false;
-    }
-
-    //Final global check
-    (counter === 5 && radioLocationIsValid === true && checkboxConditionIsValid === true) ? fieldsValid = true: fieldsValid = false;
-  }
 }
