@@ -1,7 +1,11 @@
-/*=============================================
-=                   MODAL                    =
-=============================================*/
+NodeList.prototype.forEach = function (callback) {
+  Array.prototype.forEach.call(this, callback);
+}
 
+/*=============================================
+=                   NAVBAR                    =
+=============================================*/
+//Style responsive Navbar
 function editNav() {
   var x = document.getElementById("myTopnav");
   if (x.className === "topnav") {
@@ -11,24 +15,39 @@ function editNav() {
   }
 }
 
+//Style active navBar element on click
+const navBarElements = document.querySelectorAll(".main-navbar a[href^='#']");
+navBarElements.forEach((el) => el.addEventListener("click", setActiveElement));
+
+function setActiveElement() {
+  navBarElements.forEach(el => el.classList.remove("active"));
+  this.classList.add("active");
+}
+
+/*=============================================
+=                   MODAL                    =
+=============================================*/
+
 // Modal DOM Elements
+const body = document.querySelector('body');
 const modalbg = document.querySelector(".bground");
 const modalbg2 = document.querySelector(".bground2");
 const modalBtn = document.querySelectorAll(".modal-btn");
 const modalCloseBtn = document.querySelectorAll(".close");
 const modalClose2Btn = document.querySelector(".close2");
 
-// launch modal event
+// Launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
 modalCloseBtn.forEach((btn) => btn.addEventListener("click", closeModal));
 modalClose2Btn.addEventListener("click", closeModal);
 
-// launch modal form
+// Launch modal form
 function launchModal() {
   modalbg.style.display = "block";
+  body.style.overflow = "hidden";
 }
 
-function launchModal2() {
+function launchModalValidated() {
   modalbg.style.display = "none";
   modalbg2.style.display = "block";
 }
@@ -36,14 +55,12 @@ function launchModal2() {
 function closeModal() {
   modalbg.style.display = "none";
   modalbg2.style.display = "none";
+  body.style.overflow = "auto";
 }
 
 /*=============================================
 =                   FORM                      =
 =============================================*/
-NodeList.prototype.forEach = function (callback) {
-  Array.prototype.forEach.call(this, callback);
-}
 
 //Form DOM Elements
 const form = document.querySelector('form');
@@ -58,25 +75,22 @@ const radioLocations = document.querySelectorAll('input[type="radio"]');
 const checkboxCondition = form['checkbox1'];
 
 //Global validation state
-let fieldsValid = false;
+let fieldsIsValid = false;
 
 //Validation on Submit
 form.addEventListener('submit', validateOnSubmit);
 
 //Validation on Entry
 fields.forEach(field => field.addEventListener('input', validateOnEntry));
-// fields.forEach(field => field.addEventListener('invalid', function (e) {
-//   e.preventDefault();
-// }, true));
 
 function validateOnSubmit(e) {
   e.preventDefault();
-  checkFieldsValid();
+  checkfieldsIsValid();
 
-  if (fieldsValid === false) {
+  if (fieldsIsValid === false) {
     return false;
   } else {
-    launchModal2();
+    launchModalValidated();
     this.reset();
     return true;
   }
@@ -85,17 +99,17 @@ function validateOnSubmit(e) {
 function validateOnEntry() {
   this.setCustomValidity('');
   this.checkValidity();
-  checkFieldsValid(this);
+  checkfieldsIsValid(this);
 }
 
-function checkFieldsValid(el) {
+function checkfieldsIsValid(el) {
   let counter = 0;
 
-  //pattern
+  //Pattern
   const namePattern = /[a-zA-Z]{2,}/; //name must contains only letters and at least 2 characters
   const emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; //email must begin with a word or numeric character (one or more time), can be followed by punctuation & another word or numeric character, then must contains an @ symbol, followed by word or numeric character and finish with a top level domain of 2 or 3 characters. (ex:a0.aaa@aaaa.com)
   let age = getAge(new Date(birthdate.value)); //age calculation between today and birthdate
-  let nbrIsInteger = Number(quantity.value) % 1 === 0;//check if nbr is integer;
+  let nbrIsInteger = Number(quantity.value) % 1 === 0; //check if nbr is integer;
 
   console.log(nbrIsInteger);
 
@@ -105,7 +119,7 @@ function checkFieldsValid(el) {
     return Math.abs(age.getUTCFullYear() - 1970);
   }
 
-  //conditions
+  //Conditions
   const firstConditionIsValid = first.value.trim() !== "" && first.value.trim().length >= 2 && namePattern.test(first.value.trim());
   const lastConditionIsValid = last.value.trim() !== "" && last.value.trim().length >= 2 && namePattern.test(last.value.trim());
   const emailConditionIsValid = email.value.trim() !== "" && emailPattern.test(email.value.trim());
@@ -114,7 +128,7 @@ function checkFieldsValid(el) {
   let radioLocationIsValid = false;
   let checkboxConditionIsValid = true;
 
-  //check on input each text-control fields and give visual clues errors if they are invalid
+  //Check on input each text-control fields and give visual clues errors if they are invalid
   if (el) {
     if (el.name === 'first') {
       if (firstConditionIsValid) {
@@ -166,9 +180,9 @@ function checkFieldsValid(el) {
     }
 
   } else {
-    //check on submit all fields and start the counter for final validation
+    //Check on submit all fields and start the counter for final validation
 
-    //check text-control fields
+    //Check text-control fields
     if (firstConditionIsValid) {
       counter += 1;
       removeErrorMessage(first);
@@ -200,7 +214,7 @@ function checkFieldsValid(el) {
       setErrorMessage(quantity);
     }
 
-    //check location field
+    //Check location field
     radioLocations.forEach((el) => (el.checked) && (radioLocationIsValid = true));
     if (radioLocationIsValid === true) {
       removeErrorMessage(location1);
@@ -208,7 +222,7 @@ function checkFieldsValid(el) {
       setErrorMessage(location1);
     }
 
-    //check condition field
+    //Check condition field
     if (checkboxCondition.checked) {
       checkboxCondition.setAttribute('checked', 'checked');
       removeErrorMessage(checkbox1);
@@ -220,7 +234,7 @@ function checkFieldsValid(el) {
     }
 
     //Final global check
-    (counter === 5 && radioLocationIsValid === true && checkboxConditionIsValid === true) ? fieldsValid = true: fieldsValid = false;
+    (counter === 5 && radioLocationIsValid === true && checkboxConditionIsValid === true) ? fieldsIsValid = true: fieldsIsValid = false;
   }
 }
 
@@ -233,13 +247,13 @@ function setErrorMessage(el, checktype) {
       message = "Veuillez entrer 2 caractères ou plus pour le champ du nom."
       break;
     case 'email':
-      message = "Veuillez entrer 1 email correct"
+      message = "Veuillez entrer 1 email valide"
       break;
     case 'birthdate':
-      message = "Vous devez entrer votre date de naissance.(Vous devez avoir + de 18 ans)."
+      message = "Vous devez entrer votre date de naissance. (Vous devez avoir + de 18 ans)."
       break;
     case 'quantity':
-      message = "Vous devez entrer le nombre de tournois auxquels vous avez participé."
+      message = "Vous devez entrer le nombre de tournois auxquels vous avez participé. (Entre 0 et 100)"
       break;
     case 'location':
       message = "Vous devez cocher le lieu du tournoi."
@@ -256,11 +270,12 @@ function setErrorMessage(el, checktype) {
   }
   el.parentElement.setAttribute('data-error', message);
   el.parentElement.setAttribute('data-error-visible', 'true');
-  el.classList.add('error');
+  //If needed uncomment this code to make the UI error style more visible
+  // el.classList.add('error');
 }
 
 function removeErrorMessage(el) {
   el.parentElement.removeAttribute('data-error');
   el.parentElement.setAttribute('data-error-visible', 'false');
-  el.classList.remove('error');
+  // el.classList.remove('error');
 }
