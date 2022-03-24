@@ -111,8 +111,6 @@ function checkfieldsIsValid(el) {
   let age = getAge(new Date(birthdate.value)); //age calculation between today and birthdate
   let nbrIsInteger = Number(quantity.value) % 1 === 0; //check if nbr is integer;
 
-  console.log(nbrIsInteger);
-
   function getAge(date) {
     let diff = Date.now() - date.getTime();
     let age = new Date(diff);
