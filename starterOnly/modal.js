@@ -122,7 +122,7 @@ function checkfieldsIsValid(el) {
   const lastConditionIsValid = last.value.trim() !== "" && last.value.trim().length >= 2 && namePattern.test(last.value.trim());
   const emailConditionIsValid = email.value.trim() !== "" && emailPattern.test(email.value.trim());
   const birthdateConditionIsValid = birthdate.value !== "" && (age >= 18);
-  const quantityConditionIsValid = quantity.value !== "" && quantity.value >= 0 && quantity.value <= 100 && nbrIsInteger;
+  const quantityConditionIsValid = quantity.value !== "" && quantity.value >= 0 && quantity.value < 100 && nbrIsInteger;
   let radioLocationIsValid = false;
   let checkboxConditionIsValid = true;
 
@@ -251,7 +251,7 @@ function setErrorMessage(el, checktype) {
       message = "Vous devez entrer votre date de naissance. (Vous devez avoir + de 18 ans)."
       break;
     case 'quantity':
-      message = "Vous devez entrer le nombre de tournois auxquels vous avez participé. (Entre 0 et 100)"
+      message = "Vous devez entrer le nombre de tournois auxquels vous avez participé. (Entre 0 et 99)"
       break;
     case 'location':
       message = "Vous devez cocher le lieu du tournoi."
